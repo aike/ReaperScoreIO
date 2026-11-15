@@ -1,0 +1,699 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Score IO RPC requests (protocol 2.3)",
+  "description": "POST /v2/rpc の要求。envelope は外枠、methods は method ごとの params のスキーマ。省略可能な項目に null は指定できない。相互排他などの条件は仕様書を参照。",
+  "envelope": {
+    "$ref": "#/$defs/Envelope"
+  },
+  "methods": {
+    "get_status": {
+      "$ref": "#/$defs/Empty"
+    },
+    "list_projects": {
+      "$ref": "#/$defs/Empty"
+    },
+    "select_project": {
+      "$ref": "#/$defs/SelectProjectParams"
+    },
+    "select_part": {
+      "$ref": "#/$defs/SelectPartParams"
+    },
+    "create_project": {
+      "$ref": "#/$defs/Empty"
+    },
+    "add_track": {
+      "$ref": "#/$defs/AddTrackParams"
+    },
+    "add_item": {
+      "$ref": "#/$defs/AddItemParams"
+    },
+    "get_score_info": {
+      "$ref": "#/$defs/GetScoreInfoParams"
+    },
+    "get_notes": {
+      "$ref": "#/$defs/GetNotesParams"
+    },
+    "get_request_status": {
+      "$ref": "#/$defs/GetRequestStatusParams"
+    },
+    "select_notes": {
+      "$ref": "#/$defs/SelectNotesParams"
+    },
+    "apply_patch": {
+      "$ref": "#/$defs/ApplyPatchParams"
+    },
+    "play_range": {
+      "$ref": "#/$defs/PlayRangeParams"
+    },
+    "stop": {
+      "$ref": "#/$defs/Empty"
+    }
+  },
+  "$defs": {
+    "AddItemParams": {
+      "additionalProperties": false,
+      "description": "空の MIDI アイテムの追加。part_name を省略すると選択中のパートを使う。",
+      "properties": {
+        "expect_project_name": {
+          "default": null,
+          "minLength": 1,
+          "title": "Expect Project Name",
+          "type": "string"
+        },
+        "part_name": {
+          "default": null,
+          "minLength": 1,
+          "title": "Part Name",
+          "type": "string"
+        },
+        "range": {
+          "$ref": "#/$defs/Range"
+        }
+      },
+      "required": [
+        "range"
+      ],
+      "title": "AddItemParams",
+      "type": "object"
+    },
+    "AddTrackParams": {
+      "additionalProperties": false,
+      "description": "トラック（パート）の追加。instrument は音源プラグイン名（REAPER の FX 検索にそのまま渡す）。",
+      "properties": {
+        "expect_project_name": {
+          "default": null,
+          "minLength": 1,
+          "title": "Expect Project Name",
+          "type": "string"
+        },
+        "part_name": {
+          "minLength": 1,
+          "title": "Part Name",
+          "type": "string"
+        },
+        "instrument": {
+          "default": null,
+          "minLength": 1,
+          "title": "Instrument",
+          "type": "string"
+        }
+      },
+      "required": [
+        "part_name"
+      ],
+      "title": "AddTrackParams",
+      "type": "object"
+    },
+    "ApplyPatchParams": {
+      "additionalProperties": false,
+      "properties": {
+        "expect_project_name": {
+          "default": null,
+          "minLength": 1,
+          "title": "Expect Project Name",
+          "type": "string"
+        },
+        "operations": {
+          "items": {
+            "discriminator": {
+              "mapping": {
+                "delete": "#/$defs/DeleteOp",
+                "insert": "#/$defs/InsertOp",
+                "update": "#/$defs/UpdateOp"
+              },
+              "propertyName": "op"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/$defs/InsertOp"
+              },
+              {
+                "$ref": "#/$defs/UpdateOp"
+              },
+              {
+                "$ref": "#/$defs/DeleteOp"
+              }
+            ]
+          },
+          "minItems": 1,
+          "title": "Operations",
+          "type": "array"
+        },
+        "label": {
+          "default": "SIO: Edit notes",
+          "title": "Label",
+          "type": "string"
+        },
+        "dry_run": {
+          "default": false,
+          "title": "Dry Run",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "operations"
+      ],
+      "title": "ApplyPatchParams",
+      "type": "object"
+    },
+    "DeleteOp": {
+      "additionalProperties": false,
+      "properties": {
+        "op": {
+          "const": "delete",
+          "title": "Op",
+          "type": "string"
+        },
+        "part_name": {
+          "default": null,
+          "minLength": 1,
+          "title": "Part Name",
+          "type": "string"
+        },
+        "target": {
+          "$ref": "#/$defs/Target"
+        }
+      },
+      "required": [
+        "op",
+        "target"
+      ],
+      "title": "DeleteOp",
+      "type": "object"
+    },
+    "Empty": {
+      "additionalProperties": false,
+      "description": "引数なし（params は {}）。",
+      "properties": {},
+      "title": "Empty",
+      "type": "object"
+    },
+    "Envelope": {
+      "additionalProperties": false,
+      "description": "RPC 要求の外枠。4 項目すべて必須。",
+      "properties": {
+        "protocol_version": {
+          "title": "Protocol Version",
+          "type": "string"
+        },
+        "request_id": {
+          "title": "Request Id",
+          "type": "string"
+        },
+        "method": {
+          "title": "Method",
+          "type": "string"
+        },
+        "params": {
+          "additionalProperties": true,
+          "title": "Params",
+          "type": "object"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "request_id",
+        "method",
+        "params"
+      ],
+      "title": "Envelope",
+      "type": "object"
+    },
+    "GetNotesParams": {
+      "additionalProperties": false,
+      "properties": {
+        "expect_project_name": {
+          "default": null,
+          "minLength": 1,
+          "title": "Expect Project Name",
+          "type": "string"
+        },
+        "part_names": {
+          "default": null,
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Part Names",
+          "type": "array"
+        },
+        "selected_part": {
+          "default": false,
+          "title": "Selected Part",
+          "type": "boolean"
+        },
+        "range": {
+          "$ref": "#/$defs/Range",
+          "default": null
+        },
+        "at": {
+          "$ref": "#/$defs/Position",
+          "default": null
+        },
+        "relation": {
+          "default": "overlaps",
+          "enum": [
+            "starts_in",
+            "overlaps",
+            "sounding_at"
+          ],
+          "title": "Relation",
+          "type": "string"
+        },
+        "include_muted": {
+          "default": false,
+          "title": "Include Muted",
+          "type": "boolean"
+        }
+      },
+      "title": "GetNotesParams",
+      "type": "object"
+    },
+    "GetRequestStatusParams": {
+      "additionalProperties": false,
+      "properties": {
+        "target_request_id": {
+          "title": "Target Request Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "target_request_id"
+      ],
+      "title": "GetRequestStatusParams",
+      "type": "object"
+    },
+    "GetScoreInfoParams": {
+      "additionalProperties": false,
+      "properties": {
+        "expect_project_name": {
+          "default": null,
+          "minLength": 1,
+          "title": "Expect Project Name",
+          "type": "string"
+        }
+      },
+      "title": "GetScoreInfoParams",
+      "type": "object"
+    },
+    "InsertOp": {
+      "additionalProperties": false,
+      "properties": {
+        "op": {
+          "const": "insert",
+          "title": "Op",
+          "type": "string"
+        },
+        "client_note_id": {
+          "minLength": 1,
+          "title": "Client Note Id",
+          "type": "string"
+        },
+        "part_name": {
+          "default": null,
+          "minLength": 1,
+          "title": "Part Name",
+          "type": "string"
+        },
+        "note": {
+          "$ref": "#/$defs/NewNote"
+        }
+      },
+      "required": [
+        "op",
+        "client_note_id",
+        "note"
+      ],
+      "title": "InsertOp",
+      "type": "object"
+    },
+    "NewNote": {
+      "additionalProperties": false,
+      "properties": {
+        "pitch": {
+          "maximum": 127,
+          "minimum": 0,
+          "title": "Pitch",
+          "type": "integer"
+        },
+        "start_qn": {
+          "default": null,
+          "ge": 0,
+          "title": "Start Qn",
+          "type": "number"
+        },
+        "start": {
+          "$ref": "#/$defs/Position",
+          "default": null
+        },
+        "duration_qn": {
+          "gt": 0,
+          "title": "Duration Qn",
+          "type": "number"
+        },
+        "velocity": {
+          "maximum": 127,
+          "minimum": 1,
+          "title": "Velocity",
+          "type": "integer"
+        },
+        "channel": {
+          "maximum": 16,
+          "minimum": 1,
+          "title": "Channel",
+          "type": "integer"
+        },
+        "muted": {
+          "title": "Muted",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "pitch",
+        "duration_qn",
+        "velocity",
+        "channel",
+        "muted"
+      ],
+      "title": "NewNote",
+      "type": "object"
+    },
+    "NoteChanges": {
+      "additionalProperties": false,
+      "properties": {
+        "pitch": {
+          "default": null,
+          "maximum": 127,
+          "minimum": 0,
+          "title": "Pitch",
+          "type": "integer"
+        },
+        "start_qn": {
+          "default": null,
+          "ge": 0,
+          "title": "Start Qn",
+          "type": "number"
+        },
+        "start": {
+          "$ref": "#/$defs/Position",
+          "default": null
+        },
+        "duration_qn": {
+          "default": null,
+          "gt": 0,
+          "title": "Duration Qn",
+          "type": "number"
+        },
+        "velocity": {
+          "default": null,
+          "maximum": 127,
+          "minimum": 1,
+          "title": "Velocity",
+          "type": "integer"
+        },
+        "channel": {
+          "default": null,
+          "maximum": 16,
+          "minimum": 1,
+          "title": "Channel",
+          "type": "integer"
+        },
+        "muted": {
+          "default": null,
+          "title": "Muted",
+          "type": "boolean"
+        }
+      },
+      "title": "NoteChanges",
+      "type": "object"
+    },
+    "NoteExpect": {
+      "additionalProperties": false,
+      "description": "target が解決した音符の照合条件。指定した属性だけを比較する。",
+      "properties": {
+        "pitch": {
+          "default": null,
+          "maximum": 127,
+          "minimum": 0,
+          "title": "Pitch",
+          "type": "integer"
+        },
+        "start_qn": {
+          "default": null,
+          "ge": 0,
+          "title": "Start Qn",
+          "type": "number"
+        },
+        "start": {
+          "$ref": "#/$defs/Position",
+          "default": null
+        },
+        "duration_qn": {
+          "default": null,
+          "gt": 0,
+          "title": "Duration Qn",
+          "type": "number"
+        },
+        "velocity": {
+          "default": null,
+          "maximum": 127,
+          "minimum": 1,
+          "title": "Velocity",
+          "type": "integer"
+        },
+        "channel": {
+          "default": null,
+          "maximum": 16,
+          "minimum": 1,
+          "title": "Channel",
+          "type": "integer"
+        },
+        "muted": {
+          "default": null,
+          "title": "Muted",
+          "type": "boolean"
+        }
+      },
+      "title": "NoteExpect",
+      "type": "object"
+    },
+    "NoteTargetEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "part_name": {
+          "default": null,
+          "minLength": 1,
+          "title": "Part Name",
+          "type": "string"
+        },
+        "target": {
+          "$ref": "#/$defs/Target"
+        }
+      },
+      "required": [
+        "target"
+      ],
+      "title": "NoteTargetEntry",
+      "type": "object"
+    },
+    "PlayRangeParams": {
+      "additionalProperties": false,
+      "properties": {
+        "expect_project_name": {
+          "default": null,
+          "minLength": 1,
+          "title": "Expect Project Name",
+          "type": "string"
+        },
+        "range": {
+          "$ref": "#/$defs/Range"
+        }
+      },
+      "required": [
+        "range"
+      ],
+      "title": "PlayRangeParams",
+      "type": "object"
+    },
+    "Position": {
+      "additionalProperties": false,
+      "description": "{\"qn\": n} か {\"bar\": b, \"beat\": t, \"offset_qn\": o} のどちらか一方。",
+      "properties": {
+        "qn": {
+          "default": null,
+          "ge": 0,
+          "title": "Qn",
+          "type": "number"
+        },
+        "bar": {
+          "default": null,
+          "minimum": 1,
+          "title": "Bar",
+          "type": "integer"
+        },
+        "beat": {
+          "default": null,
+          "minimum": 1,
+          "title": "Beat",
+          "type": "integer"
+        },
+        "offset_qn": {
+          "default": null,
+          "ge": 0,
+          "title": "Offset Qn",
+          "type": "number"
+        }
+      },
+      "title": "Position",
+      "type": "object"
+    },
+    "Range": {
+      "additionalProperties": false,
+      "properties": {
+        "start": {
+          "$ref": "#/$defs/Position"
+        },
+        "end": {
+          "$ref": "#/$defs/Position"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ],
+      "title": "Range",
+      "type": "object"
+    },
+    "SelectNotesParams": {
+      "additionalProperties": false,
+      "properties": {
+        "expect_project_name": {
+          "default": null,
+          "minLength": 1,
+          "title": "Expect Project Name",
+          "type": "string"
+        },
+        "targets": {
+          "items": {
+            "$ref": "#/$defs/NoteTargetEntry"
+          },
+          "title": "Targets",
+          "type": "array"
+        }
+      },
+      "required": [
+        "targets"
+      ],
+      "title": "SelectNotesParams",
+      "type": "object"
+    },
+    "SelectPartParams": {
+      "additionalProperties": false,
+      "properties": {
+        "expect_project_name": {
+          "default": null,
+          "minLength": 1,
+          "title": "Expect Project Name",
+          "type": "string"
+        },
+        "part_name": {
+          "minLength": 1,
+          "title": "Part Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "part_name"
+      ],
+      "title": "SelectPartParams",
+      "type": "object"
+    },
+    "SelectProjectParams": {
+      "additionalProperties": false,
+      "properties": {
+        "project_name": {
+          "minLength": 1,
+          "title": "Project Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "project_name"
+      ],
+      "title": "SelectProjectParams",
+      "type": "object"
+    },
+    "Target": {
+      "additionalProperties": false,
+      "description": "{\"note_id\": n} か {\"pitch\": p, 開始位置[, \"channel\": c]} のどちらか一方。expect は任意。\n\n開始位置は start_qn（数値）か start（Position。小節・拍で書ける）のどちらか一方。",
+      "properties": {
+        "note_id": {
+          "default": null,
+          "minimum": 1,
+          "title": "Note Id",
+          "type": "integer"
+        },
+        "pitch": {
+          "default": null,
+          "maximum": 127,
+          "minimum": 0,
+          "title": "Pitch",
+          "type": "integer"
+        },
+        "start_qn": {
+          "default": null,
+          "ge": 0,
+          "title": "Start Qn",
+          "type": "number"
+        },
+        "start": {
+          "$ref": "#/$defs/Position",
+          "default": null
+        },
+        "channel": {
+          "default": null,
+          "maximum": 16,
+          "minimum": 1,
+          "title": "Channel",
+          "type": "integer"
+        },
+        "expect": {
+          "$ref": "#/$defs/NoteExpect",
+          "default": null
+        }
+      },
+      "title": "Target",
+      "type": "object"
+    },
+    "UpdateOp": {
+      "additionalProperties": false,
+      "properties": {
+        "op": {
+          "const": "update",
+          "title": "Op",
+          "type": "string"
+        },
+        "part_name": {
+          "default": null,
+          "minLength": 1,
+          "title": "Part Name",
+          "type": "string"
+        },
+        "target": {
+          "$ref": "#/$defs/Target"
+        },
+        "set": {
+          "$ref": "#/$defs/NoteChanges"
+        }
+      },
+      "required": [
+        "op",
+        "target",
+        "set"
+      ],
+      "title": "UpdateOp",
+      "type": "object"
+    }
+  }
+}
