@@ -3,7 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 # 自作のプログラムから SIO を使うためのライブラリ sio_client だけを導入する。
-#   pip install <このフォルダ>
+#   python3 -m pip install <このフォルダ>
 # SIO Service（sio_service）と sio_cli は、このフォルダで直接実行する（README.md を参照）。
 [project]
 name = "sio-client"

@@ -1,14 +1,16 @@
 # REAPER Score IO (SIO)
 
+日本語 | [English](README_en.md)
+
 REAPER SIO は、音楽制作ソフト REAPER のピアノロールに入力された音符を、研究用・教育用のプログラムから読み書きするための共通インタフェースです。
 
 作曲・編曲の研究者が、楽曲分析のプログラムや作曲支援のプログラムあるいは対話型の教材を作るときに使うことを想定しています。
 
 ## 背景と目的
 
-これまでコンピュータによる作曲・編曲支援のような作曲者とのインタラクションを研究するには、研究者が簡易的なピアノロールを自作し簡易的な音源で鳴らす必要がありました。しかし、入力のしやすさも音色の品質も、実際の音楽制作で使われる道具には及びません。研究テーマごとにピアノロールを作り直す手間もかかります。
+これまでコンピュータによる作曲・編曲支援のような作曲者とのインタラクションを研究するには、研究者が簡易的なピアノロールを自作し簡易的な音源で鳴らす必要がありました。しかし入力のしやすさも音色の品質も、実際の音楽制作で使われる道具には及びません。研究テーマごとにピアノロールを作り直す手間もかかります。
 
-また楽譜で説明する古典的な作曲・編曲の教材は、楽譜を見てすぐに弾ける人、音が思い浮かぶ人でなければ、効率よく学ぶことができません。
+また楽譜で説明する古典的な作曲・編曲の教材は、楽譜を見てすぐに弾ける人、正確な音を頭の中で鳴らせる人でなければ、効率よく学ぶことができません。
 
 
 SIO は、この部分を制作用のソフトウェアに任せます。
@@ -41,7 +43,7 @@ SIO 自身は音楽的な判断をしません。和声分析、声部の推定�
 
 ## 動作に必要なもの
 
-- Windows 11（動作を確認した環境です。macOS は検証中、Linux は未確認です）
+- macOS または Windows 11（動作を確認した環境です。Linux は未確認です）
 - [REAPER](https://www.reaper.fm/) 7.x
 - [Python](https://www.python.org/) 3.11 以降
 
@@ -49,23 +51,14 @@ SIO 自身は音楽的な判断をしません。和声分析、声部の推定�
 
 ### 1. SIO を準備する
 
-このフォルダで、次のコマンドを順に実行します（PowerShell）。最初の1回だけ必要です。
-
-```powershell
-py -3.11 -m venv .venv
-.\.venv\Scripts\python -m pip install -r requirements.txt
-.\.venv\Scripts\python -m sio_service.install
-```
-
-macOS では、ターミナルで次のように実行します。以降の手順でも、`.\.venv\Scripts\python` を `.venv/bin/python` に、`examples\frog_round.py` のようなパスの `\` を `/` に読み替えてください。
+ターミナルを開き、このフォルダで次のコマンドを順に実行します。最初の1回だけ必要です。
 
 ```bash
-python3 -m venv .venv
-.venv/bin/python -m pip install -r requirements.txt
-.venv/bin/python -m sio_service.install
+python3 -m pip install -r requirements.txt
+python3 -m sio_service.install
 ```
 
-3行目は、REAPER の中で動く部品（SIO Bridge）を REAPER に組み込みます。実行後に REAPER を再起動してください。以後、REAPER を起動するたびに Bridge も自動で動きます。
+2行目は、REAPER の中で動く部品（SIO Bridge）を REAPER に組み込みます。実行後に REAPER を再起動してください。以後、REAPER を起動するたびに Bridge も自動で動きます。
 
 ### 2. REAPER で曲を用意する
 
@@ -75,8 +68,8 @@ REAPER で曲を開き、パートごとにトラックを作って MIDI アイ�
 
 ### 3. SIO Service を起動する
 
-```powershell
-.\.venv\Scripts\python -m sio_service
+```bash
+python3 -m sio_service
 ```
 
 このウィンドウは開いたままにします。SIO を使う間は、REAPER と SIO Service の両方が動いている必要があります。
@@ -85,8 +78,8 @@ REAPER で曲を開き、パートごとにトラックを作って MIDI アイ�
 
 別のウィンドウで、確認用のツール sio_cli を起動します。
 
-```powershell
-.\.venv\Scripts\python -m sio_cli
+```bash
+python3 -m sio_cli
 ```
 
 `sio> ` と表示されたら、コマンドを入力します。結果は JSON 形式で表示されます。
@@ -113,8 +106,8 @@ sio> exit                            終了する
 
 Python のプログラムからは、付属のライブラリ sio_client を使います。自分のプログラムを動かす Python に、次のコマンドで導入します（追加でインストールされるものはありません）。
 
-```powershell
-pip install D:\prj\claude\ReaperScoreInterface
+```bash
+python3 -m pip install ~/ReaperScoreInterface
 ```
 
 フォルダの場所は、SIO を置いた場所に読み替えてください。導入したら、次のように書けます。
@@ -140,10 +133,10 @@ sio.insert("Bass", "C3", (5, 1), duration=2)
 
 位置は `(小節, 拍)` か、四分音符を 1 とする数値で書きます。音高は MIDI ノート番号か、`"C4"`（＝60）のような音名で書きます。使えるメソッドの一覧は [SIO_Client_Library_Specification_ja.md](SIO_Client_Library_Specification_ja.md) にあります。
 
-そのまま動かせるサンプルプログラムが [examples](examples/README.md) フォルダにあります。「かえるの歌」の輪唱、和音の解析、連続5度の検出、和声課題の出題と評価の4つです。たとえば次のように実行します。
+そのまま動かせるサンプルプログラムが [examples](examples/README.md) フォルダにあります。「かえるの合唱」の輪唱、和音の解析、連続5度の検出、和声課題の出題と評価の4つです。たとえば次のように実行します。
 
-```powershell
-python examples\frog_round.py
+```bash
+python3 examples/frog_round.py
 ```
 
 Python 以外の言語からも使えます。SIO は、同じパソコンの中だけで通じる HTTP の窓口を用意しており、JSON の要求を送ると JSON の応答が返ります。形式は [SIO_Protocol_Specification_en.md](SIO_Protocol_Specification_en.md) にあります。
@@ -220,10 +213,12 @@ AI アシスタントから使いたい場合は、SIO の上に薄い MCP サ�
 | `PART_NOT_FOUND` というエラー | トラック名が一字一句（大文字小文字、空白も）一致しているか |
 | `UNSUPPORTED_ITEM` などのエラー | 「曲を用意するときの注意」に合わない箇所があります。`get_score_info` の `constraints` に理由が出ます |
 
-SIO を取り除くには、`.\.venv\Scripts\python -m sio_service.install --uninstall` を実行します。
+SIO を取り除くには、`python3 -m sio_service.install --uninstall` を実行します。
 
 ## ライセンス
 
 SIO のプログラム一式（SIO Service、SIO Bridge、sio_client、sio_cli、サンプルプログラム）は、MIT ライセンスで公開しています。全文は [LICENSE](LICENSE) にあります。
 
 Copyright (c) 2026 aike
+
+サンプルプログラムの一部（`examples/frog_round.py`）では、パブリックドメインの旋律を使用しています。「かえるの合唱」として知られるドイツ民謡（作曲者不詳）の旋律で、歌詞は収録していません。

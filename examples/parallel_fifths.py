@@ -3,8 +3,8 @@
 対象は、いま REAPER で表に出ている曲の「Soprano」と「Bass」という 2 つのパートです。
 --demo を付けると、連続 5 度を 1 か所含む例を新しい曲に作ってから調べます。
 
-    python examples\\parallel_fifths.py --demo      （--no-play を付けると再生しません）
-    python examples\\parallel_fifths.py              （自分で入力した曲を調べる）
+    python3 examples/parallel_fifths.py --demo      （--no-play を付けると再生しません）
+    python3 examples/parallel_fifths.py              （自分で入力した曲を調べる）
 
 使っている機能: notes / select_notes（問題の音を選択状態にして示す）/ play（その箇所を鳴らす）
 """

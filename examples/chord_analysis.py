@@ -3,7 +3,7 @@
 SIO が受け渡すのは音符（音高・位置・長さ）だけです。和音の名前や度数を求めるのは、
 このプログラムの側の仕事です（analyze_triad と roman_numeral がその部分です）。
 
-    python examples\\chord_analysis.py        （--no-play を付けると再生しません）
+    python3 examples/chord_analysis.py        （--no-play を付けると再生しません）
 
 使っている機能: create_project / add_track / add_item / patch / notes(at=…)（ある時点で鳴っている音）
 """

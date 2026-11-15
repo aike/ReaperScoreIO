@@ -1,4 +1,4 @@
-"""python -m sio_cli で起動する。"""
+"""python3 -m sio_cli で起動する。"""
 
 from __future__ import annotations
 

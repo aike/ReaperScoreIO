@@ -9,7 +9,7 @@
 
 ## 1. Purpose
 
-SIO lets Score Analyzer (SA), Composition Teacher (CT), and other applications read and edit notes entered in REAPER's piano roll. Applications do not need to select tracks, open an editor, or launch a REAPER action for each acquisition. REAPER and its resident SIO Bridge must already be running. The target project is normally already open; a client can also create an empty one (create_project), add tracks to it (add_track), and add empty MIDI items (add_item).
+SIO lets client applications, such as score analysis programs and interactive teaching programs, read and edit notes entered in REAPER's piano roll. Applications do not need to select tracks, open an editor, or launch a REAPER action for each acquisition. REAPER and its resident SIO Bridge must already be running. The target project is normally already open; a client can also create an empty one (create_project), add tracks to it (add_track), and add empty MIDI items (add_item).
 
 **This document is the authoritative external contract**: HTTP transport, request and response shapes, errors, and limits. The Japanese companion defines implementation and internal design and only summarizes the contract. If the two disagree about anything a client can observe, this document prevails. **MUST**, **MUST NOT**, **SHOULD**, and **MAY** indicate requirements, prohibitions, recommendations, and options.
 
@@ -1052,12 +1052,12 @@ REAPER Undo notes: a patch is one Undo point in the edited project. REAPER's Und
 2. The project in the active tab is the target. To work on another open project, call list_projects and then select_project with an addressable project_name.
 3. Call get_score_info to inspect part names and limitations.
 4. Call get_notes with no part parameters and no range. This always reads all parts, whatever part is selected.
-5. Analyze the returned JSON in SA. SIO performs no musical inference.
+5. Analyze the returned JSON in the client. SIO performs no musical inference.
 6. Report positions and part names. For later highlighting after possible edits, use pitch/start targets and handle no/ambiguous matches.
 
 ### 10.2 Evaluate two bars
 
-CT presents a task and waits for the human to submit from CT. Then:
+The client presents a task and waits for the human to submit from the client. Then:
 
 ```json
 {
@@ -1081,7 +1081,7 @@ CT presents a task and waits for the human to submit from CT. Then:
 }
 ```
 
-CT evaluates against its own teaching conditions. A revised submission triggers a new acquisition, without any action in REAPER beyond the human's musical editing.
+The client evaluates against its own teaching conditions. A revised submission triggers a new acquisition, without any action in REAPER beyond the human's musical editing.
 
 ### 10.3 Guarded ordinal-based correction
 
@@ -1099,7 +1099,7 @@ import os
 import uuid
 import requests
 
-config_path = os.path.expandvars(r"%APPDATA%\REAPER\SIO\config.json")
+config_path = os.path.expanduser("~/Library/Application Support/REAPER/SIO/config.json")
 with open(config_path, encoding="utf-8") as fh:
     config = json.load(fh)
 
@@ -1213,4 +1213,4 @@ Changes in 2.3:
 
 Service/Bridge 0.6.0 implements all of the above. It passed the Service unit tests and the acceptance tests on a real REAPER 7.86 (Windows 11).
 
-Not yet validated on a real installation: pooled MIDI source detection; takes that ignore project tempo; release of playback management on position jump, tab change, or recording (release on human stop is validated); rejection of edits during recording; UNSUPPORTED_PROJECT for pickups, partial bars, and mid-bar meter changes; UI stall time at 100,000 notes; select_project, create_project, add_track, and add_item during recording; the WRITE_FAILED path of add_item; add_track with third-party instrument plug-ins (validated with the bundled ReaSynth and ReaEQ only); create_project with a default project template configured; macOS and Linux.
+Not yet validated on a real installation: pooled MIDI source detection; takes that ignore project tempo; release of playback management on position jump, tab change, or recording (release on human stop is validated); rejection of edits during recording; UNSUPPORTED_PROJECT for pickups, partial bars, and mid-bar meter changes; UI stall time at 100,000 notes; select_project, create_project, add_track, and add_item during recording; the WRITE_FAILED path of add_item; add_track with third-party instrument plug-ins (validated with the bundled ReaSynth and ReaEQ only); create_project with a default project template configured; the automated acceptance tests on macOS (checked manually only); Linux.

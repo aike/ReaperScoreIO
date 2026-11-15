@@ -975,7 +975,7 @@ while/sleep待機、AI呼び出し、ネットワーク待ちは行わない。R
 
 ### 10.2 導入、自動起動、再起動
 
-導入コマンド（`python -m sio_service.install`）が、BridgeとJSONライブラリを`Scripts/SIO/`へ配置し、`Scripts/__startup.lua`に自動起動ブロックを追加する。`__startup.lua`はREAPERが起動時に実行する標準機能であり、SWSは不要。ブロックは`AddRemoveReaScript`でBridgeをActionとして登録し、`Main_OnCommand`で起動する。SWSのグローバル起動アクションを使う場合は、自動起動ブロックなしで導入し、登録済みのActionを指定する。通常の分析ごとの操作は不要。
+導入コマンド（`python3 -m sio_service.install`）が、BridgeとJSONライブラリを`Scripts/SIO/`へ配置し、`Scripts/__startup.lua`に自動起動ブロックを追加する。`__startup.lua`はREAPERが起動時に実行する標準機能であり、SWSは不要。ブロックは`AddRemoveReaScript`でBridgeをActionとして登録し、`Main_OnCommand`で起動する。SWSのグローバル起動アクションを使う場合は、自動起動ブロックなしで導入し、登録済みのActionを指定する。通常の分析ごとの操作は不要。
 
 BridgeはトグルActionとして動く（`set_action_options`）。実行中にもう一度Actionを実行すると終了し、さらに実行すると起動する。**Bridgeの再起動**とは、この終了と起動を指す。再起動により起動世代が変わり、全曲の既定パートとROLLBACK_FAILEDの書込禁止が解除される。
 
@@ -1040,7 +1040,7 @@ Service／Bridge 0.6.0がプロトコル2.3を実装している。確認用の�
 - 録音中のcreate_project・add_track・add_itemの拒否。add_itemのWRITE_FAILED（作成後の確認の失敗）。
 - 他社製の音源プラグインでのadd_track（同梱のReaSynthとReaEQでのみ確認）。
 - 既定のプロジェクトテンプレートを設定した環境でのcreate_project。
-- macOS、Linux。
+- macOSでの自動試験（手動での動作確認のみ行った）。Linux。
 
 ## 12. 参照資料
 

@@ -2,12 +2,12 @@
 
 利用者向けの説明は [README.md](README.md) にあります。この文書は、SIO 自体を開発・検証する人のための資料です。
 
-REAPER のピアノロールの音符を、外部アプリ（SA/CT など）からローカル HTTP で取得・編集するための実装です。
+REAPER のピアノロールの音符を、外部のプログラム（分析プログラムや教材など）からローカル HTTP で取得・編集するための実装です。
 仕様は `SIO_Specification_ja.md`（実装仕様）と `SIO_Protocol_Specification_en.md`（クライアント向けプロトコル 2.3）です。
 Service／Bridge 0.6.0 がプロトコル 2.3 を実装しています。
 
 ```
-SA/CT ──HTTP──▶ SIO Service (Python) ──ファイルIPC──▶ SIO Bridge (Lua, REAPER 内に常駐)
+クライアント ──HTTP──▶ SIO Service (Python) ──ファイルIPC──▶ SIO Bridge (Lua, REAPER 内に常駐)
 ```
 
 | 場所 | 内容 |
@@ -24,16 +24,15 @@ SA/CT ──HTTP──▶ SIO Service (Python) ──ファイルIPC──▶ SI
 | `tests/test_client.py` | sio_client の試験（偽の通信路を使用） |
 | `tests/test_e2e_reaper.py` | 実機受入試験（本物の REAPER を起動して仕様 11.1 を確認） |
 
-動作確認環境: Windows 11、REAPER 7.86、Python 3.11。
+動作確認環境: Windows 11、REAPER 7.86、Python 3.11（自動試験を含む）。macOS でも手動で動作を確認している。
 
 ## 導入
 
-```powershell
-py -3.11 -m venv .venv
-.\.venv\Scripts\python -m pip install -r requirements.txt
+```bash
+python3 -m pip install -r requirements.txt
 
 # Bridge を REAPER に導入（Scripts/SIO へコピーし、Scripts/__startup.lua に自動起動を追加）
-.\.venv\Scripts\python -m sio_service.install
+python3 -m sio_service.install
 ```
 
 - 導入後に REAPER を再起動すると Bridge が自動起動します。SWS は不要です（REAPER 標準の `__startup.lua` を使用）。
@@ -41,16 +40,16 @@ py -3.11 -m venv .venv
   `Script: sio_bridge.lua` を起動アクションに設定してください。
 - Bridge は Action 一覧でトグル表示されます。もう一度実行すると停止し、さらに実行すると起動します（＝ Bridge の再起動）。
 - ポータブル導入の REAPER では `--resource-path <reaper.ini のあるフォルダ>` を付けます（Service も同じ）。
-- 取り除くには `python -m sio_service.install --uninstall`。
+- 取り除くには `python3 -m sio_service.install --uninstall`。
 
 ## Service の起動
 
-```powershell
-.\.venv\Scripts\python -m sio_service            # 127.0.0.1:18741
-.\.venv\Scripts\python -m sio_service --port 18750 --resource-path D:\ReaperPortable
+```bash
+python3 -m sio_service            # 127.0.0.1:18741
+python3 -m sio_service --port 18750 --resource-path ~/ReaperPortable
 ```
 
-- 設定は `<REAPERリソース>/SIO/config.json`（Windows 既定: `%APPDATA%\REAPER\SIO\config.json`）。
+- 設定は `<REAPERリソース>/SIO/config.json`（macOS 既定: `~/Library/Application Support/REAPER/SIO/config.json`）。
   初回起動時に `token` を自動生成します。クライアントはこのファイルから `token` と `port` を読みます。
 - `host` はループバックのみ指定できます。CORS は既定で無効で、`"allowed_origins": ["http://localhost:5173"]`
   のように明示したオリジンだけ許可します。
@@ -62,7 +61,7 @@ py -3.11 -m venv .venv
 Service と REAPER（Bridge）が動いている状態で起動します。標準ライブラリだけで動きます。
 
 ```
-> .\.venv\Scripts\python -m sio_cli
+$ python3 -m sio_cli
 sio> get_status
 sio> select_part "piano"
 sio> get_notes selected=true range=b1..b3
@@ -80,7 +79,7 @@ sio> exit
 ```python
 import json, os, uuid, requests
 
-cfg = json.load(open(os.path.expandvars(r"%APPDATA%\REAPER\SIO\config.json"), encoding="utf-8"))
+cfg = json.load(open(os.path.expanduser("~/Library/Application Support/REAPER/SIO/config.json"), encoding="utf-8"))
 
 def rpc(method, params=None):
     r = requests.post(
@@ -105,15 +104,19 @@ print(rpc("apply_patch", {
 
 ## 試験
 
-```powershell
+```bash
 # Service 単体、sio_cli、sio_client（REAPER 不要）
-.\.venv\Scripts\python -m pytest tests/test_service.py tests/test_cli.py tests/test_client.py
+python3 -m pytest tests/test_service.py tests/test_cli.py tests/test_client.py
+```
 
-# 実機受入試験。普段の設定に触れないよう、試験専用のポータブル REAPER を使う:
+実機受入試験は reaper.exe を起動する作りなので、Windows でだけ動く（PowerShell）。
+
+```powershell
+# 普段の設定に触れないよう、試験専用のポータブル REAPER を使う:
 #   reaper.exe・Plugins フォルダ・reaper-license.rk をコピーし、普段の REAPER.ini を reaper.ini という名前で
 #   同じ場所に置いたフォルダ（reaper.ini があるとポータブル導入として起動する）
 $env:SIO_E2E_REAPER_DIR = "C:\path\to\reaper_portable"
-.\.venv\Scripts\python -m pytest tests/test_e2e_reaper.py -v -s
+python -m pytest tests/test_e2e_reaper.py -v -s
 ```
 
 実機試験は REAPER を起動し、自動起動 → 選択 → 取得 → 選択・編集・Undo → 失敗注入と復元 → 対応外構造 →

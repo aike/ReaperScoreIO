@@ -1,7 +1,7 @@
 """SIO Bridge を REAPER のリソースフォルダへ導入する。
 
-    python -m sio_service.install [--resource-path DIR] [--no-autostart]
-    python -m sio_service.install --uninstall
+    python3 -m sio_service.install [--resource-path DIR] [--no-autostart]
+    python3 -m sio_service.install --uninstall
 
 Scripts/SIO/ に Bridge と JSON ライブラリを置き、Scripts/__startup.lua に
 「Action 登録 → 起動」を行う自動起動ブロックを追加する（SWS は不要）。

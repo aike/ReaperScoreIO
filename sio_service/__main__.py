@@ -1,4 +1,4 @@
-"""python -m sio_service で SIO Service を起動する。"""
+"""python3 -m sio_service で SIO Service を起動する。"""
 
 from __future__ import annotations
 

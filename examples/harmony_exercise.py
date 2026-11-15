@@ -4,8 +4,8 @@
 プログラムがバスを書き込み、学習者が REAPER のピアノロールで Soprano に音符を入力します。
 Enter を押すと解答を読み取り、和音に含まれない音を指摘して、その小節を鳴らします。
 
-    python examples\\harmony_exercise.py            （自分で解答を入力する）
-    python examples\\harmony_exercise.py --demo     （誤りを 1 つ含む解答を自動で入力し、直すところまで実演する）
+    python3 examples/harmony_exercise.py            （自分で解答を入力する）
+    python3 examples/harmony_exercise.py --demo     （誤りを 1 つ含む解答を自動で入力し、直すところまで実演する）
 
 使っている機能: 課題の用意（create_project / add_track / add_item / patch）、
                 解答の読み取り（notes）、指摘（select_notes / play）、修正（update）

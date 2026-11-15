@@ -14,12 +14,12 @@ sio_cliは、SIOの動作を人間が手で確認するための対話型ツー�
 - request_idとprotocol_versionは自動で付ける。
 - `exit`で終了する。
 
-sio_cliは確認用の道具であり、SA/CTの代わりではない。分析や表形式の表示は行わない。引数の意味の検証はServiceに任せ、sio_cliは構文だけを検査する（エラー応答そのものを確認できるようにするため）。
+sio_cliは確認用の道具であり、分析プログラムや教材の代わりではない。分析や表形式の表示は行わない。引数の意味の検証はServiceに任せ、sio_cliは構文だけを検査する（エラー応答そのものを確認できるようにするため）。
 
 ## 2. 起動と終了
 
 ```
-python -m sio_cli [--resource-path DIR] [--url URL] [--token TOKEN] [--timeout 秒] [-c "コマンド"]
+python3 -m sio_cli [--resource-path DIR] [--url URL] [--token TOKEN] [--timeout 秒] [-c "コマンド"]
 ```
 
 | 引数 | 既定 | 内容 |
@@ -272,7 +272,7 @@ sio> exit
 
 ## 8. 実装方針
 
-- 配置：`sio_cli/`パッケージ、`python -m sio_cli`で起動。
+- 配置：`sio_cli/`パッケージ、`python3 -m sio_cli`で起動。
 - HTTPは`urllib.request`。行編集と履歴は`readline`が使える環境で有効にし、なければ標準の入力を使う。
 - 構成：コマンド行の字句解析、コマンドごとの「引数→params」変換表、送信と表示、の3部に分ける。変換表は`help`の内容と同じ定義から生成し、書式と実際の動作がずれないようにする。
 - 試験：`tests/test_cli.py`。コマンド行からparamsへの変換（4章の例をそのまま試験表にしている）と、偽のHTTPサーバーに対する送信・表示を確認する。

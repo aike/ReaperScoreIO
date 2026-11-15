@@ -27,7 +27,7 @@ for note in sio.notes(bars=(1, 2)):
 SIOのフォルダを指定して`pip install`する。導入されるのは`sio_client`だけで、他のパッケージは追加されない。
 
 ```
-pip install D:\prj\claude\ReaperScoreInterface
+python3 -m pip install ~/ReaperScoreInterface
 ```
 
 ```python

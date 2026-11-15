@@ -5,11 +5,11 @@ Python のライブラリ sio_client を使った、短いプログラムの例�
 ## 実行する前に
 
 1. REAPER を起動しておきます。
-2. SIO Service を起動しておきます（`.\.venv\Scripts\python -m sio_service`）。
+2. SIO Service を起動しておきます（`python3 -m sio_service`）。
 3. SIO のフォルダで、次のように実行します。
 
-```powershell
-python examples\frog_round.py
+```bash
+python3 examples/frog_round.py
 ```
 
 sio_client を `pip install` していなくても、このフォルダの中からなら動きます。
@@ -22,7 +22,7 @@ sio_client を `pip install` していなくても、このフォルダの中か
 
 | ファイル | 内容 | 主に使う機能 |
 |---|---|---|
-| [frog_round.py](frog_round.py) | 「かえるの歌」を 2 つのトラックで輪唱する。2 小節ずれた同じ旋律を書き込み、再生する | トラックと入力範囲の用意、複数の音符の書き込み、再生 |
+| [frog_round.py](frog_round.py) | 「かえるの合唱」（かえるの歌）を 2 つのトラックで輪唱する。2 小節ずれた同じ旋律を書き込み、再生する | トラックと入力範囲の用意、複数の音符の書き込み、再生 |
 | [chord_analysis.py](chord_analysis.py) | 3 和音を 4 小節分書き込み、読み取って、和音の名前・度数・転回形を表示する | ある時点で鳴っている音の読み取り |
 | [parallel_fifths.py](parallel_fifths.py) | 2 声（Soprano と Bass）の連続 5 度・連続 8 度を見つけ、その音を REAPER 上で選択状態にして、その小節を鳴らす | 読み取り、音符の選択、範囲の再生 |
 | [harmony_exercise.py](harmony_exercise.py) | 和声の課題を出し、学習者がピアノロールに入力した解答を評価する。対話型の教材の最小の例 | 課題の用意、解答の読み取り、指摘、修正 |
@@ -38,6 +38,8 @@ Frog 2: 29 音、第3小節から第10小節まで
 
 旋律は「(音名, 長さ)」の並びとして書いてあります。`MELODY` を書き換えれば別の曲に、`VOICES` に名前を足せば 3 声以上の輪唱になります。
 
+曲について：旋律はドイツ民謡（作曲者不詳）で、著作権の保護期間が終わっています。このプログラムが扱うのは旋律だけです。日本語詞「かえるの合唱」（岡本敏明、1907〜1977）は著作権の保護期間中のため、歌詞は収録していません。
+
 ### chord_analysis.py
 
 ```
@@ -52,9 +54,9 @@ SIO が受け渡すのは音符だけです。和音の名前や度数を求め�
 
 ### parallel_fifths.py
 
-```powershell
-python examples\parallel_fifths.py --demo     # 連続 5 度を含む例を作ってから調べる
-python examples\parallel_fifths.py            # いま表に出ている曲の Soprano と Bass を調べる
+```bash
+python3 examples/parallel_fifths.py --demo     # 連続 5 度を含む例を作ってから調べる
+python3 examples/parallel_fifths.py            # いま表に出ている曲の Soprano と Bass を調べる
 ```
 
 ```
@@ -66,9 +68,9 @@ python examples\parallel_fifths.py            # いま表に出ている曲の S
 
 ### harmony_exercise.py
 
-```powershell
-python examples\harmony_exercise.py           # 自分で解答を入力する
-python examples\harmony_exercise.py --demo    # 誤りを含む解答を自動で入力し、直すところまで実演する
+```bash
+python3 examples/harmony_exercise.py           # 自分で解答を入力する
+python3 examples/harmony_exercise.py --demo    # 誤りを含む解答を自動で入力し、直すところまで実演する
 ```
 
 ```

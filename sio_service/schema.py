@@ -1,6 +1,6 @@
 """要求（外枠と各 method の params）の JSON Schema を出力する。
 
-    python -m sio_service.schema > docs/sio_rpc.schema.json
+    python3 -m sio_service.schema > docs/sio_rpc.schema.json
 """
 
 from __future__ import annotations
