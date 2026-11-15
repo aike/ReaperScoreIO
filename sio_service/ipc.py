@@ -219,8 +219,12 @@ class BridgeLink:
             try:
                 if replace:
                     os.replace(tmp, final)
+                elif sys.platform == "win32":
+                    os.rename(tmp, final)   # Windows の rename は、既存の final があれば失敗する
                 else:
-                    os.rename(tmp, final)
+                    # POSIX の rename は既存の final を黙って置き換えるので、link で排他的に公開する。
+                    os.link(tmp, final)
+                    self._unlink(tmp)
                 return
             except FileExistsError:
                 self._unlink(tmp)

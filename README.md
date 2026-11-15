@@ -41,7 +41,7 @@ SIO 自身は音楽的な判断をしません。和声分析、声部の推定�
 
 ## 動作に必要なもの
 
-- Windows 11（動作を確認した環境です。macOS と Linux は未確認です）
+- Windows 11（動作を確認した環境です。macOS は検証中、Linux は未確認です）
 - [REAPER](https://www.reaper.fm/) 7.x
 - [Python](https://www.python.org/) 3.11 以降
 
@@ -55,6 +55,14 @@ SIO 自身は音楽的な判断をしません。和声分析、声部の推定�
 py -3.11 -m venv .venv
 .\.venv\Scripts\python -m pip install -r requirements.txt
 .\.venv\Scripts\python -m sio_service.install
+```
+
+macOS では、ターミナルで次のように実行します。以降の手順でも、`.\.venv\Scripts\python` を `.venv/bin/python` に、`examples\frog_round.py` のようなパスの `\` を `/` に読み替えてください。
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python -m sio_service.install
 ```
 
 3行目は、REAPER の中で動く部品（SIO Bridge）を REAPER に組み込みます。実行後に REAPER を再起動してください。以後、REAPER を起動するたびに Bridge も自動で動きます。
